@@ -6,7 +6,8 @@ export default function Home() {
           Hello World!
         </h1>
         <p className="text-base sm:text-lg text-slate-700">
-          Kiran Dai is chutiya, <p> मुजी , किरण दाई 😂!!</p>
+          Kiran Dai is chutiya.
+          <br /> मुजी, किरण दाई 😂!!
         </p>
       </div>
     </main>
