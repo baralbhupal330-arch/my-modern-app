@@ -1,11 +1,6 @@
-import "./globals.css";
-
 export const metadata = {
-  title: "My App",
-  description: "Minimal Next.js app",
+  title: 'My App',
 };
-
-export const viewport = "width=device-width, initial-scale=1";
 
 export default function RootLayout({
   children,
