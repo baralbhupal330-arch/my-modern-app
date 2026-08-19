@@ -28,25 +28,28 @@ const PROJECTS = [
 export default function Home() {
   return (
     <main className="p-8">
-      <h1 className="text-4xl font-bold mb-2">20 Projects to Master Full-Stack</h1>
-      <p className="text-gray-600 mb-8">Build real apps, learn real skills</p>
+      <h1 className="text-4xl font-bold mb-2">Portfolio Projects</h1>
+      <p className="text-gray-600 mb-8">Live projects built with Next.js & React</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {PROJECTS.map((project) => (
-          <div key={project.id}>
-            {project.id === 1 ? (
-              <Link href="/todos">
-                <div className="p-6 border rounded-lg hover:shadow-lg cursor-pointer">
-                  <h2 className="text-xl font-bold mb-2">{project.name}</h2>
-                  <p className="text-gray-600">{project.description}</p>
-                </div>
-              </Link>
-            ) : (
-              <div className="p-6 border rounded-lg hover:shadow-lg">
-                <h2 className="text-xl font-bold mb-2">{project.name}</h2>
-                <p className="text-gray-600">{project.description}</p>
-              </div>
-            )}
+        <Link href="/crypto">
+          <div className="p-6 border border-blue-500 rounded-lg hover:shadow-lg cursor-pointer bg-blue-50">
+            <h2 className="text-xl font-bold mb-2">Crypto Dashboard</h2>
+            <p className="text-gray-600">Real-time cryptocurrency data with interactive charts</p>
+          </div>
+        </Link>
+
+        <Link href="/todos">
+          <div className="p-6 border rounded-lg hover:shadow-lg cursor-pointer">
+            <h2 className="text-xl font-bold mb-2">Todo App</h2>
+            <p className="text-gray-600">Master React fundamentals</p>
+          </div>
+        </Link>
+
+        {PROJECTS.slice(1).map((project) => (
+          <div key={project.id} className="p-6 border rounded-lg hover:shadow-lg">
+            <h2 className="text-xl font-bold mb-2">{project.name}</h2>
+            <p className="text-gray-600">{project.description}</p>
           </div>
         ))}
       </div>
