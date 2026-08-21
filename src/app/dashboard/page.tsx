@@ -1,12 +1,21 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { LogoutButton } from '@/components/ui/LogoutButton';
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
+  const router = useRouter();
 
-  if (status === 'loading') {
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login');
+    }
+  }, [status, router]);
+
+  if (status === 'loading' || status === 'unauthenticated') {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 

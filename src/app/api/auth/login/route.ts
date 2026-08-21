@@ -21,19 +21,36 @@ export async function POST(req: NextRequest): Promise<NextResponse<AuthResponse>
       );
     }
 
-    // TODO: Query database to find user by email
-    // TODO: Verify password
-    // For now, return mock response
-    console.log('Login attempt for:', email);
+    const { prisma } = await import('@/lib/db');
+
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase().trim() },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: 'Invalid email or password' },
+        { status: 401 }
+      );
+    }
+
+    const passwordValid = await verifyPassword(password, user.password);
+
+    if (!passwordValid) {
+      return NextResponse.json(
+        { success: false, message: 'Invalid email or password' },
+        { status: 401 }
+      );
+    }
 
     return NextResponse.json(
       {
         success: true,
         message: 'Login successful',
         user: {
-          id: 'mock-id',
-          email,
-          name: 'Mock User',
+          id: user.id,
+          email: user.email,
+          name: user.name || '',
         },
       },
       { status: 200 }
@@ -41,7 +58,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<AuthResponse>
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(
-      { success: false, message: 'Internal server error' },
+      { success: false, message: 'Authentication failed' },
       { status: 500 }
     );
   }

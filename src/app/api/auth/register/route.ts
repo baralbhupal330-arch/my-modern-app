@@ -5,16 +5,18 @@ import { RegisterPayload, AuthResponse } from '@/types/auth';
 export async function POST(req: NextRequest): Promise<NextResponse<AuthResponse>> {
   try {
     const body = await req.json() as RegisterPayload;
-    const { email, password, name } = body;
+    const sanitizedEmail = body.email?.trim().toLowerCase() || '';
+    const sanitizedName = body.name?.trim() || '';
+    const password = body.password || '';
 
-    if (!email || !password || !name) {
+    if (!sanitizedEmail || !password || !sanitizedName) {
       return NextResponse.json(
         { success: false, message: 'Missing required fields' },
         { status: 400 }
       );
     }
 
-    if (!validateEmail(email)) {
+    if (!validateEmail(sanitizedEmail)) {
       return NextResponse.json(
         { success: false, message: 'Invalid email format' },
         { status: 400 }
@@ -32,12 +34,10 @@ export async function POST(req: NextRequest): Promise<NextResponse<AuthResponse>
       );
     }
 
-    // Import Prisma here to defer connection until runtime
     const { prisma } = await import('@/lib/db');
 
-    // Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email },
+      where: { email: sanitizedEmail },
     });
 
     if (existingUser) {
@@ -47,13 +47,12 @@ export async function POST(req: NextRequest): Promise<NextResponse<AuthResponse>
       );
     }
 
-    // Hash password and create user
     const hashedPassword = await hashPassword(password);
 
     const user = await prisma.user.create({
       data: {
-        email,
-        name,
+        email: sanitizedEmail,
+        name: sanitizedName,
         password: hashedPassword,
         role: 'USER',
       },
@@ -71,11 +70,12 @@ export async function POST(req: NextRequest): Promise<NextResponse<AuthResponse>
       },
       { status: 201 }
     );
-  } catch (error: any) {
-    console.error('Registration error:', error);
-    const errorMessage = error?.message || 'Internal server error';
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Registration error:', error.message);
+    }
     return NextResponse.json(
-      { success: false, message: `Error: ${errorMessage}` },
+      { success: false, message: 'Registration failed. Please try again.' },
       { status: 500 }
     );
   }
