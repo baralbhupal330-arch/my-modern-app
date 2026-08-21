@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { LoginPayload } from '@/types/auth';
 
 export function LoginForm() {
   const [formData, setFormData] = useState({
@@ -26,28 +26,20 @@ export function LoginForm() {
     setLoading(true);
 
     try {
-      const payload: LoginPayload = {
+      const result = await signIn('credentials', {
         email: formData.email,
         password: formData.password,
-      };
-
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        redirect: false,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.message || 'Login failed');
+      if (!result?.ok) {
+        setError(result?.error || 'Login failed');
         return;
       }
 
       router.push('/dashboard');
     } catch (err) {
       setError('An error occurred. Please try again.');
-      console.error('Login error:', err);
     } finally {
       setLoading(false);
     }
