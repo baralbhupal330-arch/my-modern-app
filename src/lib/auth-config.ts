@@ -1,5 +1,5 @@
 import Credentials from 'next-auth/providers/credentials';
-import { hashPassword, verifyPassword, validateEmail } from './auth';
+import { validateEmail } from './auth';
 
 export const authConfig = {
   providers: [
@@ -19,8 +19,8 @@ export const authConfig = {
           return null;
         }
 
-        // TODO: Query database for user
-        // For now, mock user
+        // TODO: Query database for user with password verification
+        // For MVP: mock user, later connect to Prisma
         const mockUser = {
           id: '1',
           email,
@@ -34,4 +34,9 @@ export const authConfig = {
   pages: {
     signIn: '/login',
   },
+  session: {
+    strategy: 'jwt' as const,
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  secret: process.env.NEXTAUTH_SECRET,
 };
