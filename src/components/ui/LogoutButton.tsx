@@ -6,7 +6,7 @@ import { Button } from './Button';
 export function LogoutButton() {
   return (
     <Button
-      onClick={() => signOut({ redirectTo: '/' })}
+      onClick={() => signOut({ redirect: true })}
       variant="secondary"
     >
       Sign Out
