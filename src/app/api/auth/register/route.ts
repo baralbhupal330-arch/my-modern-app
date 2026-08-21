@@ -26,26 +26,47 @@ export async function POST(req: NextRequest): Promise<NextResponse<AuthResponse>
       return NextResponse.json(
         {
           success: false,
-          message: 'Password validation failed',
+          message: passwordValidation.errors[0] || 'Password validation failed',
         },
         { status: 400 }
       );
     }
 
-    // TODO: Check if user already exists in database
-    // TODO: Hash password and save to database
-    // For now, return mock response
+    // Import Prisma here to defer connection until runtime
+    const { prisma } = await import('@/lib/db');
+
+    // Check if user already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      return NextResponse.json(
+        { success: false, message: 'Email already registered' },
+        { status: 400 }
+      );
+    }
+
+    // Hash password and create user
     const hashedPassword = await hashPassword(password);
-    console.log('User would be created with hashed password');
+
+    const user = await prisma.user.create({
+      data: {
+        email,
+        name,
+        password: hashedPassword,
+        role: 'USER',
+      },
+    });
 
     return NextResponse.json(
       {
         success: true,
         message: 'User registered successfully',
         user: {
-          id: 'mock-id',
-          email,
-          name,
+          id: user.id,
+          email: user.email,
+          name: user.name || '',
         },
       },
       { status: 201 }
