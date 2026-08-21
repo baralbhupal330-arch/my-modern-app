@@ -1,5 +1,8 @@
+import './globals.css';
+import { AuthSessionProvider } from '@/components/SessionProvider';
+
 export const metadata = {
-  title: 'My App',
+  title: 'E-Commerce App',
 };
 
 export default function RootLayout({
@@ -9,7 +12,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <AuthSessionProvider>
+          {children}
+        </AuthSessionProvider>
+      </body>
     </html>
   );
 }
