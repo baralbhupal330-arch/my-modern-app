@@ -71,10 +71,11 @@ export async function POST(req: NextRequest): Promise<NextResponse<AuthResponse>
       },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error('Registration error:', error);
+    const errorMessage = error?.message || 'Internal server error';
     return NextResponse.json(
-      { success: false, message: 'Internal server error' },
+      { success: false, message: `Error: ${errorMessage}` },
       { status: 500 }
     );
   }
