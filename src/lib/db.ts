@@ -3,14 +3,23 @@ import { PrismaPg } from '@prisma/adapter-pg';
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-export const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({
+const createPrismaClient = () => {
+  const databaseUrl = process.env.DATABASE_URL;
+
+  // Use adapter for PostgreSQL, native driver for SQLite
+  if (databaseUrl?.startsWith('file:')) {
+    return new PrismaClient({ log: ['error'] });
+  }
+
+  return new PrismaClient({
     adapter: new PrismaPg({
-      connectionString: process.env.DATABASE_URL,
+      connectionString: databaseUrl,
     }),
     log: ['error'],
   });
+};
+
+export const prisma = globalForPrisma.prisma || createPrismaClient();
 
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma;
