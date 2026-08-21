@@ -1,4 +1,3 @@
-import type { NextAuthConfig } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { hashPassword, verifyPassword, validateEmail } from './auth';
 
@@ -34,16 +33,4 @@ export const authConfig = {
   pages: {
     signIn: '/login',
   },
-  callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user;
-      const isOnAuthPage = nextUrl.pathname.startsWith('/(auth)');
-
-      if (isOnAuthPage) {
-        return !isLoggedIn;
-      }
-
-      return isLoggedIn || nextUrl.pathname === '/';
-    },
-  },
-} satisfies NextAuthConfig;
+};
